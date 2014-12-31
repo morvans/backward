@@ -1,0 +1,102 @@
+.page-y2k13 {
+	padding-bottom: 80px;
+}
+
+#card-header {
+
+}
+
+#card-footer {
+	text-align:right;
+}
+
+.card-block p {
+	font-family: "Gill Sans",Georgia,serif;
+	font-weight: normal;
+	font-size: 4em;
+	margin:0;
+	padding:0;
+	line-height: 1em;
+}
+
+#middle-content .view-display-id-panel_pane_1 {
+/*	position: fixed;
+	bottom:0;
+	height: 80px;
+	overflow: hidden; */
+}
+
+#middle-content .view-display-id-panel_pane_1 ul > li {
+	display: inline;
+	float: left;
+	margin: 0;
+	padding: 0;
+}
+
+
+#middle-content .view-display-id-panel_pane_1  {
+	background: #fff;
+}
+
+
+#middle-content .view-display-id-panel_pane_1 tr {
+	background: transparent;
+	border: 0;
+}
+
+#middle-content .view-display-id-panel_pane_1 td {
+	vertical-align: middle;
+}
+
+#middle-content .view-display-id-panel_pane_1 tr h1 {
+	margin:0;
+}
+
+#middle-content .view-display-id-panel_pane_1 tr h1:before {
+	content: "\2190";
+}
+
+#middle-content .view-display-id-panel_pane_2 article {
+	margin-top: 50px;
+	margin-bottom: 5px;
+} 
+
+#middle-content .view-display-id-panel_pane_2 ul > li {
+	display: inline;
+	margin: 0;
+	padding: 0;
+}
+
+
+#middle-content .view-display-id-panel_pane_2 h1 {
+	padding-top: 50px;
+}
+
+
+
+#middle-content .view-display-id-panel_pane_2 .views-row-even h1:after {
+	content: "\2192";
+}
+
+#middle-content .view-display-id-panel_pane_2 .views-row-odd h1:before {
+	content: "\2190";
+}
+
+
+#middle-content .view-display-id-panel_pane_2 img {
+	float: left;
+	margin: 0;
+	margin-right: 25px;
+}
+
+#middle-content .view-display-id-panel_pane_2 .views-row-even img {
+	float: right;
+	margin: 0;
+	margin-left: 25px;
+}
+
+
+#middle-content .view-display-id-panel_pane_2 .views-row-even {
+	text-align: right;
+}
+

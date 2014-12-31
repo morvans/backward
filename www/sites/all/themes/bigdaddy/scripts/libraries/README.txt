@@ -1,0 +1,1 @@
+Here you add all your JS libraries that you will need (jQuery plugins, JS slideshows, polyfills…)

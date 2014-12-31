@@ -1,0 +1,52 @@
+name = BigDaddy
+description = A nice starting theme for Drupal themers. Written in HTML5 with clean CSS and ready for CSS3 and @media queries integration.
+core = 7.x
+version = 7.x-1.9
+screenshot = images/screenshot.png
+
+;--------------------- regions ---------------------------
+regions[page_top] = PAGE TOP
+regions[header] = HEADER
+regions[sidebar_first] = SIDEBAR FIRST
+regions[help] = HELP
+regions[highlighted] = HIGHLIGHTED
+regions[featured] = FEATURED
+regions[content_top] = CONTENT TOP
+regions[content] = CONTENT
+regions[content_bottom] = CONTENT BOTTOM
+regions[sidebar_second] = SIDEBAR SECOND
+regions[footer] = FOOTER
+regions[page_bottom] = PAGE BOTTOM
+
+;--------------------- styles ----------------------------
+stylesheets[all][] = styles/reset.css
+stylesheets[all][] = styles/typography.css
+stylesheets[all][] = styles/master.css
+stylesheets[all][] = styles/master-css3.css
+stylesheets[all][] = styles/master-media.css
+stylesheets[all][] = styles/theme-settings.css
+stylesheets[print][] = styles/master-print.css
+
+;-------------------------- LESS --------------------------
+;---- works only with http://drupal.org/project/less ------
+;stylesheets[all][] = styles/less/master-less.css.less
+
+;--------------------- javascripts ------------------------
+scripts[] = scripts/master.js
+
+;--------------------- settings ---------------------------
+settings[bigdaddy_wireframes] = 0
+settings[bigdaddy_css_prototyping] = 0
+settings[bigdaddy_grid_system] = 0
+settings[bigdaddy_html5_placeholder] = 0
+
+;--------------------- panels -----------------------------
+;----------- works only with the Panels module -----------
+;Panels layouts. You can place multiple layouts under the "layouts" folder.
+;plugins[panels][layouts] = layouts
+; Information added by drupal.org packaging script on 2012-07-21
+version = "7.x-2.0"
+core = "7.x"
+project = "bigdaddy"
+datestamp = "1342877179"
+

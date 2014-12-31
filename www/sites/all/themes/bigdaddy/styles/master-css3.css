@@ -1,0 +1,35 @@
+/*
+ * --- THEME BIGDADDY ---
+ * Styles for MASTER CSS3 screen styles.
+----------------------------------------------------- */
+
+/* Visit http://css3please.com/ for some nice examples
+---------------------------------------------------------------------- */
+
+/* useful if you don't want a bg color from leaking outside the border: */
+#example {
+  -moz-background-clip: padding; 
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+/* TRANSPARENCY
+---------------------------------------------------------------------- */
+#example {
+  background: rgba(255, 0, 0, 0.2);
+}
+
+/* ROUNDED CORNERS
+---------------------------------------------------------------------- */
+  /* Your styles */
+
+/* TEXT DECORATION
+---------------------------------------------------------------------- */
+  /* Your styles */
+
+/* ANIMATIONS
+---------------------------------------------------------------------- */
+  /* Your styles */
+
+
+

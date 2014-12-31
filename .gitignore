@@ -1,0 +1,12 @@
+# Ignore all core Drupal files.
+www/sites/default
+
+.idea
+*.iml
+
+# ignore scripts logs
+scripts/*.log
+
+dumps/*
+
+var/*
