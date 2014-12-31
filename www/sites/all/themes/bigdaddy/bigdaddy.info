@@ -47,6 +47,6 @@ settings[bigdaddy_html5_placeholder] = 0
 ; Information added by drupal.org packaging script on 2012-07-21
 version = "7.x-2.0"
 core = "7.x"
-project = "bigdaddy"
+;project = "bigdaddy"
 datestamp = "1342877179"
 
