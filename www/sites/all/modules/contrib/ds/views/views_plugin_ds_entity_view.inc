@@ -10,6 +10,8 @@
  */
 class views_plugin_ds_entity_view extends views_plugin_row {
 
+  protected $group_count;
+
   function init(&$view, &$display, $options = NULL) {
     parent::init($view, $display, $options);
     $this->base_table = $view->base_table;
@@ -18,11 +20,20 @@ class views_plugin_ds_entity_view extends views_plugin_row {
       $this->base_table = 'node';
     }
     $this->base_field = $this->ds_views_3_support();
+
+    $this->group_count = 0;
   }
 
   // Return base_field based on base_table. It might not be
   // the cleanest solution, it's the fastest though.
   function ds_views_3_support() {
+    if (strpos($this->base_table, 'eck_') === 0) {
+      // Base tables of entities created by entity construction kit (eck)
+      // are prefixed with 'eck_' and the base field is always 'id'.
+      $this->entity_type = str_replace('eck_', '', $this->base_table);
+      return 'id';
+    }
+
     $base_table_fields = array(
       'node' => array('field' => 'nid', 'entity_type' => 'node'),
       'comment' => array('field' => 'cid', 'entity_type' => 'comment'),
@@ -52,6 +63,7 @@ class views_plugin_ds_entity_view extends views_plugin_row {
     $options['grouping_fieldset'] = array(
       'contains' => array(
         'grouping' => array('default' => FALSE, 'bool' => TRUE),
+        'group_odd_even' => array('default' => FALSE, 'bool' => TRUE),
         'group_field' => array('default' => ''),
         'group_field_function' => array('default' => ''),
       ),
@@ -234,6 +246,12 @@ class views_plugin_ds_entity_view extends views_plugin_row {
       $form['grouping_fieldset']['grouping']['#description'] = t('Grouping is disabled because you do not have any sort fields.');
     }
 
+    $form['grouping_fieldset']['group_odd_even'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Add odd/even group classes to the individual group elements'),
+      '#default_value' => FALSE,
+    );
+
     // Advanced function.
     $delta_fields = array();
     $field_api_fields = field_info_instances($this->entity_type);
@@ -257,7 +275,7 @@ class views_plugin_ds_entity_view extends views_plugin_row {
       '#description' => t('Select fields which "delta" value should be added to the result row. On the manage display of an entity you can decide to look for this delta value to only print that row.'),
       '#options' => $delta_fields,
       '#multiple' => TRUE,
-      '#default_value' => $this->options['delta_fields'],
+      '#default_value' => !empty($this->options['delta_fields']) ? $this->options['delta_fields'] : '',
     );
 
     // Advanced function.
@@ -290,7 +308,7 @@ class views_plugin_ds_entity_view extends views_plugin_row {
   function options_submit(&$form, &$form_state) {
     $form_state['values']['row_options']['load_comments'] = $form_state['values']['row_options']['default_fieldset']['load_comments'];
     $form_state['values']['row_options']['view_mode'] = $form_state['values']['row_options']['default_fieldset']['view_mode'];
-    $form_state['values']['row_options']['switch'] = $form_state['values']['row_options']['switch_fieldset']['switch'];
+    $form_state['values']['row_options']['switch'] = isset($form_state['values']['row_options']['switch_fieldset']) ? $form_state['values']['row_options']['switch_fieldset']['switch'] : FALSE;
     $form_state['values']['row_options']['alternating'] = $form_state['values']['row_options']['alternating_fieldset']['alternating'];
     $form_state['values']['row_options']['grouping'] = $form_state['values']['row_options']['grouping_fieldset']['grouping'];
     $form_state['values']['row_options']['advanced'] = $form_state['values']['row_options']['advanced_fieldset']['advanced'];
@@ -355,7 +373,6 @@ class views_plugin_ds_entity_view extends views_plugin_row {
    * Render each $row.
    */
   function render($row) {
-
     // Set a variable to indicate if comments need to be loaded or not.
     $load_comments = isset($this->options['load_comments']) ? $this->options['load_comments'] : FALSE;
 
@@ -422,17 +439,18 @@ class views_plugin_ds_entity_view extends views_plugin_row {
       }
 
       $raw_group_value = isset($row->{$group_field}) ? $row->{$group_field} : '';
-      if (!isset($grouping[$view_name][$raw_group_value])) {
-        $group_value = $raw_group_value;
-        // Special function to format the heading value.
-        if (!empty($this->options['grouping_fieldset']['group_field_function'])) {
-          $function = $this->options['grouping_fieldset']['group_field_function'];
-          if (function_exists($function)) {
-            $group_value = $function($raw_group_value, $this->entities[$row->{$this->field_alias}]);
-          }
+      $group_value = $raw_group_value;
+      // Special function to format the heading value.
+      if (!empty($this->options['grouping_fieldset']['group_field_function'])) {
+        $function = $this->options['grouping_fieldset']['group_field_function'];
+        if (function_exists($function)) {
+          $group_value = $function($raw_group_value, $this->entities[$row->{$this->field_alias}]);
         }
+      }
+      if (!isset($grouping[$view_name][$group_value])) {
         $group_value_content = '<h2 class="grouping-title">' . $group_value . '</h2>';
-        $grouping[$view_name][$raw_group_value] = $raw_group_value;
+        $grouping[$view_name][$group_value] = $group_value;
+        $this->group_count++;
       }
     }
 
@@ -441,7 +459,17 @@ class views_plugin_ds_entity_view extends views_plugin_row {
       if (!empty($group_value_content)) {
         $content = $group_value_content . $content;
       }
-      $content = '<div class="grouping-content">' . $content . '</div>';
+      $classes = array('grouping-content');
+      if ($this->options['grouping_fieldset']['group_odd_even']) {
+        if ($this->group_count % 2 == 0) {
+          $classes[] = 'even';
+        }
+        else {
+          $classes[] = 'odd';
+        }
+      }
+
+      $content = '<div class="' . implode(' ', $classes) . '">' . $content . '</div>';
     }
 
     // Return the content.
@@ -472,7 +500,15 @@ class views_plugin_ds_entity_view extends views_plugin_row {
 
     $row_function = 'ds_views_row_render_' . $this->base_table;
     $content = $row_function($this->entities[$row->{$this->field_alias}], $view_mode, $load_comments);
-    return $content;
+    // Allow other modules to modify the entity render array in context.
+    $context = array(
+      'row' => $row,
+      'view' => &$this->view,
+      'view_mode' => $view_mode,
+      'load_comments' => $load_comments,
+    );
+    drupal_alter('ds_views_row_render_entity', $content, $context);
+    return drupal_render($content);
   }
 }
 
@@ -484,7 +520,7 @@ function ds_views_row_render_node($entity, $view_mode, $load_comments) {
   if ($load_comments && module_exists('comment')) {
     $node_display['comments'] = comment_node_page_additions($entity);
   }
-  return drupal_render($node_display);
+  return $node_display;
 }
 
 /**
@@ -493,7 +529,7 @@ function ds_views_row_render_node($entity, $view_mode, $load_comments) {
 function ds_views_row_render_comment($entity, $view_mode, $load_comments) {
   $node = node_load($entity->nid);
   $element = comment_view($entity, $node, $view_mode);
-  return drupal_render($element);
+  return $element;
 }
 
 /**
@@ -501,7 +537,7 @@ function ds_views_row_render_comment($entity, $view_mode, $load_comments) {
  */
 function ds_views_row_render_users($entity, $view_mode, $load_comments) {
   $element = user_view($entity, $view_mode);
-  return drupal_render($element);
+  return $element;
 }
 
 /**
@@ -509,7 +545,7 @@ function ds_views_row_render_users($entity, $view_mode, $load_comments) {
  */
 function ds_views_row_render_taxonomy_term_data($entity, $view_mode, $load_comments) {
   $element = taxonomy_term_view($entity, $view_mode);
-  return drupal_render($element);
+  return $element;
 }
 
 /**
@@ -517,7 +553,7 @@ function ds_views_row_render_taxonomy_term_data($entity, $view_mode, $load_comme
  */
 function ds_views_row_render_file_managed($entity, $view_mode, $load_comments) {
   $element = file_view($entity, $view_mode);
-  return drupal_render($element);
+  return $element;
 }
 
 /**
@@ -525,5 +561,5 @@ function ds_views_row_render_file_managed($entity, $view_mode, $load_comments) {
  */
 function ds_views_row_render_micro($entity, $view_mode, $load_comments) {
   $element = micro_view($entity, $view_mode);
-  return drupal_render($element);
+  return $element;
 }
